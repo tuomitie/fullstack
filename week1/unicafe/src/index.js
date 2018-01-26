@@ -1,6 +1,33 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+const Button = ({ handleClick, text }) => (
+    <button onClick={handleClick}>
+        {text}
+    </button>
+)
+
+const Statistics = ({positiivinen, neutraali, negatiivinen}) => {
+    if (positiivinen+neutraali+negatiivinen === 0) {
+        return (
+            <div>
+                <p>ei yhtään palautetta annettu</p>
+            </div>
+        )
+    }
+        return (
+            <div>
+                <p>hyvä <Statistic counter={positiivinen}/></p>
+                <p>neutraali <Statistic counter={neutraali}/></p>
+                <p>huono <Statistic counter={negatiivinen}/></p>
+                <p>keskiarvo {((positiivinen - negatiivinen) / (positiivinen + neutraali + negatiivinen)).toFixed(1)}</p>
+                <p>positiivisia {(positiivinen / (positiivinen + neutraali + negatiivinen) * 100).toFixed(1)} %</p>
+            </div>
+        )
+}
+
+const Statistic = ({ counter }) => <span>{counter}</span>
+
 class App extends React.Component {
     constructor(props) {
         super(props)
@@ -8,55 +35,42 @@ class App extends React.Component {
             positiivinen: 0,
             neutraali: 0,
             negatiivinen: 0,
-            summa: 0,
-            lkm: 0
         }
     }
 
-    klikPos = () => {
-        this.setState({
-            positiivinen: this.state.positiivinen + 1,
-            summa: this.state.summa +1,
-            lkm: this.state.lkm +1
-        })
-    }
-
-    klikNeut = () => {
-        this.setState({
-            neutraali: this.state.neutraali + 1,
-            lkm: this.state.lkm +1
-        })
-    }
-
-    klikNega = () => {
-        this.setState({
-            negatiivinen: this.state.negatiivinen + 1,
-            summa: this.state.summa -1,
-            lkm: this.state.lkm +1
-        })
-    }
+    kasvata = (arvo) => () => this.setState({ positiivinen: arvo })
+    neutraloi = (arvo) => () => this.setState({ neutraali: arvo })
+    vahenna = (arvo) => () => this.setState({ negatiivinen: arvo })
 
     render() {
-        return (
+        return <div>
             <div>
-                <div>
-                    <h1>Anna palautetta</h1>
-                    <button onClick={this.klikPos}>hyvä</button>
-                    <button onClick={this.klikNeut}>neutraali</button>
-                    <button onClick={this.klikNega}>huono</button>
-                    <h2>Statistiikka</h2>
-                    <p>hyvä {this.state.positiivinen}</p>
-                    <p>neutraali {this.state.neutraali}</p>
-                    <p>huono {this.state.negatiivinen}</p>
-                    <p>keskiarvo {(this.state.summa / this.state.lkm).toFixed(1)}</p>
-                    <p>positiivisia {(this.state.positiivinen / this.state.lkm * 100).toFixed(1)} %</p>
-                </div>
-            </div>
-        )
-    }
-}
+                <h1>Anna palautetta</h1>
+                <Button
+                    handleClick={this.kasvata(this.state.positiivinen + 1)}
+                    text="hyvä"
+                />
 
-ReactDOM.render(
+                <Button
+                    handleClick={this.neutraloi(this.state.neutraali + 1)}
+                    text="neutraali"
+                />
+
+                <Button
+                    handleClick={this.vahenna(this.state.negatiivinen + 1)}
+                    text="huono"
+                />
+
+                <h2>Statistiikka</h2>
+
+                <Statistics positiivinen={this.state.positiivinen} neutraali={this.state.neutraali} negatiivinen={this.state.negatiivinen}/>
+            </div>
+        </div>
+
+    }
+    }
+
+    ReactDOM.render(
     <App />,
     document.getElementById('root')
 )
