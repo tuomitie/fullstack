@@ -1,20 +1,25 @@
-import React from 'react';
+import React from 'react'
+import personService from './services/persons'
 import Person from './components/Person'
 
 class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            persons: [
-                { name: 'Arto Hellas', number: '040-123456' },
-                { name: 'Martti Tienari', number: '040-123456' },
-                { name: 'Arto Järvinen', number: '040-123456' },
-                { name: 'Lea Kutvonen', number: '040-123456' }
-            ],
+            persons: [],
             newName: '',
             newNumber: '',
-            filtteri: ''
+            filtteri: '',
+            poistettava: ''
         }
+    }
+
+    componentWillMount() {
+        personService
+            .getAll()
+            .then(response => {
+                this.setState({ persons: response})
+            })
     }
 
     handleNameChange = (event) => {
@@ -35,16 +40,31 @@ class App extends React.Component {
             name: this.state.newName,
             number: this.state.newNumber
         }
-
         if (!(this.state.persons.map(person => person.name)).includes(this.state.newName)) {
-            const persons = this.state.persons.concat(henkilo)
-            this.setState({
-                persons,
-                newName: '',
-                newNumber: ''
-            })
+            personService
+                .create(henkilo)
+                .then(henkilo => {
+                    this.setState({
+                        persons: this.state.persons.concat(henkilo),
+                        newName: '',
+                        newNumber: ''
+                    })
+                })
         } else {
             alert("Henkilö on jo luettelossa.");
+        }
+    }
+
+    poistaNumero = (id) => {
+        return () => {
+            const vastaavaHenkilo = this.state.persons.find(n => n.id === id)
+            if (window.confirm(`Poistetaanko ${vastaavaHenkilo.name}?`)) {
+                personService
+                    .poista(id)
+                    .then(indeksi => {
+                        this.setState({ persons: this.state.persons.filter(n => n.id !== id) })
+                    })
+            }
         }
     }
 
@@ -52,7 +72,7 @@ class App extends React.Component {
         const personsToShow =
             this.state.filtteri.length === 0 ?
                 this.state.persons :
-                this.state.persons.filter(person => person.name.includes(this.state.filtteri))
+                this.state.persons.filter(person => person.name.toLowerCase().includes(this.state.filtteri.toLowerCase()))
 
         return (
             <div>
@@ -74,7 +94,7 @@ class App extends React.Component {
                 <h2>Numerot</h2>
                 <table>
                     <tbody>
-                            {personsToShow.map(person =><Person key={person.name} person={person} />)}
+                            {personsToShow.map(person =><Person key={person.id} person={person} poistaNumero={this.poistaNumero(person.id)} />)}
                     </tbody>
                 </table>
             </div>
