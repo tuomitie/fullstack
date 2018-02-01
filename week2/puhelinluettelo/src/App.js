@@ -51,7 +51,22 @@ class App extends React.Component {
                     })
                 })
         } else {
-            alert("Henkilö on jo luettelossa.");
+            if (window.confirm(`${henkilo.name} on jo luettelossa. Korvataanko vanha numero uudella?`)) {
+                var muuttunutHenkilo = this.state.persons.find(henkilo => henkilo.name === henkilo.name)
+                var id = muuttunutHenkilo.id
+                console.log(muuttunutHenkilo)
+                muuttunutHenkilo.number = this.state.newNumber
+                personService
+                    .update(id, muuttunutHenkilo)
+                    .then(muuttunutHenkilo => {
+                        const persons = this.state.persons.filter(n => n.id !== id)
+                        this.setState({
+                            persons: persons.concat(muuttunutHenkilo),
+                            newName: '',
+                            newNumber: ''
+                        })
+                    })
+            }
         }
     }
 
