@@ -72,10 +72,18 @@ class App extends React.Component {
                             newNumber: '',
                             message: `Henkilön ${henkilo.name} puhelinnumero on muutettu.`
                         })
-                        setTimeout(() => {
-                            this.setState({message: null})
-                        }, 5000)
                     })
+                    .catch(error => {
+                        this.setState({
+                            persons: this.state.persons.filter(n => n.id !== id),
+                            newName: '',
+                            newNumber: '',
+                            message: `Henkilön ${henkilo.name} puhelinnumeroa ei löytynyt järjestelmästä.`
+                        })
+                    })
+                setTimeout(() => {
+                    this.setState({message: null})
+                }, 5000)
             }
         }
     }
