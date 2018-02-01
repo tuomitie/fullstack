@@ -1,6 +1,7 @@
 import React from 'react'
-import personService from './services/persons'
 import Person from './components/Person'
+import personService from './services/persons'
+import Notification from './components/Notification'
 
 class App extends React.Component {
     constructor(props) {
@@ -10,7 +11,8 @@ class App extends React.Component {
             newName: '',
             newNumber: '',
             filtteri: '',
-            poistettava: ''
+            poistettava: '',
+            message: null
         }
     }
 
@@ -47,12 +49,16 @@ class App extends React.Component {
                     this.setState({
                         persons: this.state.persons.concat(henkilo),
                         newName: '',
-                        newNumber: ''
+                        newNumber: '',
+                        message: `Lisättiin ${henkilo.name}.`
                     })
+                    setTimeout(() => {
+                        this.setState({message: null})
+                    }, 5000)
                 })
         } else {
             if (window.confirm(`${henkilo.name} on jo luettelossa. Korvataanko vanha numero uudella?`)) {
-                var muuttunutHenkilo = this.state.persons.find(henkilo => henkilo.name === henkilo.name)
+                var muuttunutHenkilo = this.state.persons.find(n => henkilo.name === n.name)
                 var id = muuttunutHenkilo.id
                 console.log(muuttunutHenkilo)
                 muuttunutHenkilo.number = this.state.newNumber
@@ -63,8 +69,12 @@ class App extends React.Component {
                         this.setState({
                             persons: persons.concat(muuttunutHenkilo),
                             newName: '',
-                            newNumber: ''
+                            newNumber: '',
+                            message: `Henkilön ${henkilo.name} puhelinnumero on muutettu.`
                         })
+                        setTimeout(() => {
+                            this.setState({message: null})
+                        }, 5000)
                     })
             }
         }
@@ -91,19 +101,20 @@ class App extends React.Component {
 
         return (
             <div>
-                <h2>Puhelinluettelo</h2>
-                <div>Rajaa näytettäviä: <input value={this.state.filtteri} onChange={this.handleFiltering} /></div>
+                <h1>Puhelinluettelo</h1>
+                <Notification message={this.state.message}/>
+                <div><span className="labeli">Rajaa näytettäviä:</span> <input value={this.state.filtteri} onChange={this.handleFiltering} /></div>
 
-                <h2>Lisää uusi</h2>
+                <h2>Lisää uusi tai muokkaa numeroa</h2>
                 <form onSubmit={this.lisaaNumero}>
                     <div>
-                        nimi: <input value={this.state.newName} onChange={this.handleNameChange} />
+                        <span className="labeli">Nimi:</span> <input value={this.state.newName} onChange={this.handleNameChange} />
                     </div>
                     <div>
-                        numero: <input value={this.state.newNumber} onChange={this.handleNumberChange} />
+                        <span className="labeli">Numero:</span> <input value={this.state.newNumber} onChange={this.handleNumberChange} />
                     </div>
                     <div>
-                        <button type="submit">lisää</button>
+                        <button type="submit" className="submitti">lisää</button>
                     </div>
                 </form>
                 <h2>Numerot</h2>
