@@ -1,4 +1,5 @@
 import React from 'react';
+import Person from './components/Person'
 
 class App extends React.Component {
     constructor(props) {
@@ -16,16 +17,27 @@ class App extends React.Component {
         }
     }
 
+    handleNameChange = (event) => {
+        this.setState({ newName: event.target.value })
+    }
+
+    handleNumberChange = (event) => {
+        this.setState({ newNumber: event.target.value })
+    }
+
+    handleFiltering = (event) => {
+        this.setState({ filtteri: event.target.value })
+    }
+
     lisaaNumero = (event) => {
         event.preventDefault()
-        const nameObject = {
+        const henkilo = {
             name: this.state.newName,
-            number: this.state.newNumber,
-            id: this.state.persons.length + 1
+            number: this.state.newNumber
         }
 
         if (!(this.state.persons.map(person => person.name)).includes(this.state.newName)) {
-            const persons = this.state.persons.concat(nameObject)
+            const persons = this.state.persons.concat(henkilo)
             this.setState({
                 persons,
                 newName: '',
@@ -34,21 +46,6 @@ class App extends React.Component {
         } else {
             alert("Henkilö on jo luettelossa.");
         }
-    }
-
-    handleNameChange = (event) => {
-        console.log(event.target.value)
-        this.setState({ newName: event.target.value })
-    }
-
-    handleNumberChange = (event) => {
-        console.log(event.target.value)
-        this.setState({ newNumber: event.target.value })
-    }
-
-    handleFiltering = (event) => {
-        console.log(event.target.value)
-        this.setState({ filtteri: event.target.value })
     }
 
     render() {
@@ -77,14 +74,9 @@ class App extends React.Component {
                 <h2>Numerot</h2>
                 <table>
                     <tbody>
-
-                            {personsToShow.map(person => (<tr key={person.name}><td>{person.name}</td><td>{person.number}</td></tr>))}
-
+                            {personsToShow.map(person =><Person key={person.name} person={person} />)}
                     </tbody>
                 </table>
-
-
-
             </div>
         )
     }
