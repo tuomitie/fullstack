@@ -10,7 +10,6 @@ class App extends React.Component {
             valitutMaat: [],
             filtteri: ''
         }
-        console.log('constructor')
     }
 
     componentDidMount() {
@@ -40,7 +39,8 @@ class App extends React.Component {
     render() {
         const NaytettavaSisalto = () => {
             if (this.state.filtteri.length === 0) {
-                return (this.state.maat.map(country => <div key={country.id}>{country.name}</div>))
+                return (this.state.maat.map(country => <div key={country.id}
+                                                            onClick={this.handleClick(country.name)}>{country.name}</div>))
             }
             if (this.state.filtteri.length > 0 && this.state.valitutMaat.length > 10) {
                 return (<div>liikaa tuloksia, tarkenna hakua</div>)
